@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <title>Sneaky</title>
+    <style>
+        html, body {
+          height: 100%;
+          overflow: hidden;
+          margin: 10;
+        }
+        #content {
+          height: 100%;
+          width: 100%;
+        }
+        #leftContent {
+          float: left;
+          height: 100%;
+          width: 50%;
+          background: #aaffaa;
+          overflow: auto;
+          box-sizing: border-box;
+          padding: 5em;
+        }
+        #rightContent {
+          float: right;
+          height: 100%;
+          width: 50%;
+          background: #ffaaaa;
+          overflow: auto;
+          box-sizing: border-box;
+          padding: 5em;
+        }
+</style>
+</head>
+<body>
+<div id="content">
+    <div id="leftContent">
+        streams: <div id="streams"></div>
+    </div>
+    <div id="rightContent">
+        <form id="form">
+            localport: <input id="localPort" value="8090"><p/>
+            hostname: <input id="hostname" value="www.google.com"><p/>
+            port: <input id="port" value="80"><p/>
+            <button id="btn">add</button>
+        </form>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    $(function () {
+
+        $('#left').click(function(ack) {
+            $('#lowerLeft').text('acked '+JSON.stringify(msg))
+        })
+
+        $.getJSON('manage', function(result) {
+            $('#streams').text(JSON.stringify(result))
+        });
+
+        $('#btn').on('click', function(thing) {
+            console.log('btn clicked '+thing);
+            $.post({
+                url: 'manage',
+                data : JSON.stringify($('#form')),
+                datatype: 'json'
+            })
+        })
+
+    });
+</script>
+</body>
+</html>
