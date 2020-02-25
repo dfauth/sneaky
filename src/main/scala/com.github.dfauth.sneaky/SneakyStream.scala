@@ -5,7 +5,7 @@ import java.util.concurrent.CompletionStage
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.stream.scaladsl.Tcp.{IncomingConnection, ServerBinding}
-import akka.stream.scaladsl.{Source, Tcp}
+import akka.stream.scaladsl.{Keep, Sink, Source, Tcp}
 import com.typesafe.scalalogging.LazyLogging
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
@@ -24,11 +24,11 @@ case class SneakyStream(localPort: Int, hostname: String, port: Int) extends Laz
   def run(implicit system:ActorSystem) = {
     val connections: Source[IncomingConnection, Future[ServerBinding]] = Tcp().bind("127.0.0.1", localPort)
 
-    connections.runForeach((in: Tcp.IncomingConnection) => {
+    connections.map((in: Tcp.IncomingConnection) => {
       logger.info("New connection from: " + in.remoteAddress)
       val out = Tcp().outgoingConnection(hostname, port)
       in.handleWith(out)
-    })
+    }).to(Sink.ignore).run()
   }
 
 }
