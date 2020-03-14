@@ -16,7 +16,7 @@ object Main extends App with LazyLogging {
 
   val httpPort = system.settings.config.getInt("sneaky.http.port")
   new ServiceLifecycleImpl(system, materializer, port = httpPort) {
-    override val route: Route = SneakyStreamManager(system).route ~ static
+    override val route: Route = SneakyStreamManager(system, materializer).route ~ static
   }.start()
 
   Await.result(system.whenTerminated, Duration.Inf)

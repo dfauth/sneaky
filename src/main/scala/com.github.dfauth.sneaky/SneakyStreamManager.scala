@@ -3,17 +3,13 @@ package com.github.dfauth.sneaky
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, StatusCode, StatusCodes}
 import akka.http.scaladsl.server.Directives._
+import akka.stream.{ActorMaterializer, Materializer}
 import com.github.dfauth.sneaky.JsonSupport._
 import spray.json._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
 
-case object SneakyStreamManager {
-  def apply(system: ActorSystem) = new SneakyStreamManager(system)
-}
-
-case class SneakyStreamManager(system: ActorSystem) {
+case class SneakyStreamManager(system: ActorSystem, materializer:ActorMaterializer) {
 
   var streams:Seq[SneakyStream] = Seq.empty[SneakyStream]
 
@@ -25,7 +21,7 @@ case class SneakyStreamManager(system: ActorSystem) {
       post {
         entity(as[SneakyStream]) { s =>
           streams = streams :+ s
-          complete(s.run(system).map(r => streams.map {_.toJson}))
+          complete(s.run(system, materializer).map(r => streams.map {_.toJson}))
 //          s.run(system).onComplete {
 //            case Success(u) => complete(streams.map {_.toJson.toString})
 //            case Failure(t) => complete(StatusCodes.InternalServerError)
