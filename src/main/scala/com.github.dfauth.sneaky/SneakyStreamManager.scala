@@ -22,10 +22,6 @@ case class SneakyStreamManager(system: ActorSystem, materializer:ActorMaterializ
         entity(as[SneakyStream]) { s =>
           streams = streams :+ s
           complete(s.run(system, materializer).map(r => streams.map {_.toJson}))
-//          s.run(system).onComplete {
-//            case Success(u) => complete(streams.map {_.toJson.toString})
-//            case Failure(t) => complete(StatusCodes.InternalServerError)
-//          }
         }
       },
       pathSuffix("d".r) { id =>
