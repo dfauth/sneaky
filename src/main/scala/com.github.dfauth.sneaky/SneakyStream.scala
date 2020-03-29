@@ -22,7 +22,7 @@ case class SneakyStream(localPort: Int, hostname: String, port: Int) extends Laz
   def stop:Unit = {}
 
   def run(implicit system:ActorSystem) = {
-    val connections: Source[IncomingConnection, Future[ServerBinding]] = Tcp().bind("127.0.0.1", localPort)
+    val connections: Source[IncomingConnection, Future[ServerBinding]] = Tcp().bind("0.0.0.0", localPort)
 
     connections.map((in: Tcp.IncomingConnection) => {
       logger.info("New connection from: " + in.remoteAddress)
